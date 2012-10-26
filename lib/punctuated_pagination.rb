@@ -25,6 +25,7 @@ class PunctuatedPagination
   def configure(&block)
     @config ||= Config.new
     block.call(@config)
+    @config.validate!
     @config
   end
 

@@ -29,6 +29,16 @@ describe PunctuatedPagination do
 
       subject.config.redis.namespace.should == "something_else"
     end
+
+    context "incomplete configuration" do
+      it "raises a PunctuatedPagination::ConfigError" do
+        expect do
+          subject.configure do |config|
+            config.namespace = "something_else"
+          end
+        end.to raise_error(PunctuatedPagination::ConfigError)
+      end
+    end
   end
 
   context "global class interface" do
@@ -48,6 +58,14 @@ describe PunctuatedPagination do
 
     describe "#configure" do
       it_should_behave_like "configurable"
+    end
+
+    describe "#generate_first_page_token" do
+
+    end
+
+    describe "#search" do
+
     end
   end
 end
