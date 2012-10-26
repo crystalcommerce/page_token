@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-require File.expand_path('../lib/punctuated_pagination/version', __FILE__)
+require File.expand_path('../lib/page_token/version', __FILE__)
 
 Gem::Specification.new do |gem|
   gem.authors       = ["Michael Xavier", "Donald Plummer"]
@@ -11,9 +11,9 @@ Gem::Specification.new do |gem|
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n")
   gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  gem.name          = "punctuated_pagination"
+  gem.name          = "page_token"
   gem.require_paths = ["lib"]
-  gem.version       = PunctuatedPagination::VERSION
+  gem.version       = PageToken::VERSION
 
   gem.add_dependency("redis", "~> 3.0.2")
   gem.add_dependency("redis-namespace", "~> 1.2.1")

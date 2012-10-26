@@ -1,13 +1,13 @@
 require 'redis/namespace'
 
-class PunctuatedPagination
+class PageToken
   class ConfigError < StandardError; end
 
   class Config
     attr_reader :connection, :namespace, :redis
 
     def initialize
-      @namespace = "punctuated_pagination"
+      @namespace = "page_token"
     end
 
     def connection=(redis_conn)

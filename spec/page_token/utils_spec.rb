@@ -1,8 +1,8 @@
 require 'spec_helper'
-require 'punctuated_pagination/utils'
+require 'page_token/utils'
 
-describe PunctuatedPagination::Utils do
-  subject { PunctuatedPagination::Utils }
+describe PageToken::Utils do
+  subject { PageToken::Utils }
 
   describe ".hash_to_pairs" do
     it "handles the empty case" do

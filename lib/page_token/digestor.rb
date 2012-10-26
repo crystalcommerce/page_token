@@ -1,6 +1,6 @@
 require 'digest/md5'
 
-class PunctuatedPagination
+class PageToken
   class Digestor
     def initialize(options)
       @options = options

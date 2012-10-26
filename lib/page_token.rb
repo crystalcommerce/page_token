@@ -1,9 +1,9 @@
-require "punctuated_pagination/version"
-require "punctuated_pagination/config"
-require "punctuated_pagination/utils"
-require "punctuated_pagination/digestor"
+require "page_token/version"
+require "page_token/config"
+require "page_token/utils"
+require "page_token/digestor"
 
-class PunctuatedPagination
+class PageToken
   class << self
     def respond_to?(method, include_private=false)
       super || instance.respond_to?(method, include_private)

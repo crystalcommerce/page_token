@@ -1,4 +1,4 @@
-class PunctuatedPagination
+class PageToken
   module Utils
     def self.stringify_keys(hash)
       hash.inject({}) do |acc, (k, v)|

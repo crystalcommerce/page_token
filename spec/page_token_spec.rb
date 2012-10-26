@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'punctuated_pagination'
+require 'page_token'
 
-describe PunctuatedPagination do
+describe PageToken do
   shared_examples_for "configurable" do
     let(:redis) { mock("Redis") }
 
@@ -13,12 +13,12 @@ describe PunctuatedPagination do
       subject.config.redis.redis.should == redis
     end
 
-    it "defaults to the punctuated_pagination namespace" do
+    it "defaults to the page_token namespace" do
       subject.configure do |config|
         config.connection = redis
       end
 
-      subject.config.redis.namespace.should == "punctuated_pagination"
+      subject.config.redis.namespace.should == "page_token"
     end
 
     it "allows you to override the punctuated pagination" do
@@ -31,18 +31,18 @@ describe PunctuatedPagination do
     end
 
     context "incomplete configuration" do
-      it "raises a PunctuatedPagination::ConfigError" do
+      it "raises a PageToken::ConfigError" do
         expect do
           subject.configure do |config|
             config.namespace = "something_else"
           end
-        end.to raise_error(PunctuatedPagination::ConfigError)
+        end.to raise_error(PageToken::ConfigError)
       end
     end
   end
 
   context "global class interface" do
-    subject { PunctuatedPagination }
+    subject { PageToken }
 
     describe ".configure" do
       after(:each) do
@@ -54,7 +54,7 @@ describe PunctuatedPagination do
   end
 
   context "instance interface" do
-    subject { PunctuatedPagination.new }
+    subject { PageToken.new }
 
     describe "#configure" do
       it_should_behave_like "configurable"
