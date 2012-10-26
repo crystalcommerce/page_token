@@ -1,5 +1,7 @@
 require "punctuated_pagination/version"
 require "punctuated_pagination/config"
+require "punctuated_pagination/utils"
+require "punctuated_pagination/digestor"
 
 class PunctuatedPagination
   class << self
@@ -31,5 +33,19 @@ class PunctuatedPagination
 
   def clear_config!
     @config = Config.new
+  end
+
+  # options required:
+  # :limit - positive integer limit
+  # :search - hash of search params
+  # optional arguments:
+  # :order - either :asc or :desc, defaults to :asc
+  def generate_first_page_token(options)
+    options = Utils.stringify_keys(options)
+    options.delete("last_id") # not pertinent to first page
+    options["order"] ||= :asc
+    raise(ArgumentError, "Missing :limit")  unless options["limit"]
+    raise(ArgumentError, "Missing :search") unless options["search"]
+    Digestor.new(options).digest
   end
 end

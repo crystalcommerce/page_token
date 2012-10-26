@@ -61,7 +61,46 @@ describe PunctuatedPagination do
     end
 
     describe "#generate_first_page_token" do
+      it "generates a deterministic md5" do
+        md5 = subject.generate_first_page_token(:order => :asc,
+                                                :limit => 100,
+                                                :search => {:foo => "bar",
+                                                            :bar => "baz"})
+        md5.should == 'd7f2dbac1f23881f10d1677cd0535f76'
+      end
 
+      it "ignores extraneous options" do
+        md5 = subject.generate_first_page_token(:order => :asc,
+                                                :limit => 100,
+                                                :pigs => 'yep',
+                                                :search => {:foo => "bar",
+                                                            :bar => "baz"})
+        md5.should == 'd7f2dbac1f23881f10d1677cd0535f76'
+      end
+
+      it "ignores last_id option" do
+        md5 = subject.generate_first_page_token(:order => :asc,
+                                                :limit => 100,
+                                                :last_id => 10,
+                                                :search => {:foo => "bar",
+                                                            :bar => "baz"})
+        md5.should == 'd7f2dbac1f23881f10d1677cd0535f76'
+      end
+
+      it "coerces the expected types" do
+        md5 = subject.generate_first_page_token("order" => "asc",
+                                                "limit" => "100",
+                                                "search" => {"foo" => "bar",
+                                                             "bar" => "baz"})
+        md5.should == 'd7f2dbac1f23881f10d1677cd0535f76'
+      end
+
+      it "defaults order to :asc" do
+        md5 = subject.generate_first_page_token(:limit => 100,
+                                                :search => {:foo => "bar",
+                                                            :bar => "baz"})
+        md5.should == 'd7f2dbac1f23881f10d1677cd0535f76'
+      end
     end
 
     describe "#search" do
