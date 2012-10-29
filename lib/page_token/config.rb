@@ -5,6 +5,7 @@ class PageToken
 
   class Config
     attr_reader :connection, :namespace, :redis
+    attr_accessor :ttl
 
     def initialize
       @namespace = "page_token"

@@ -2,9 +2,14 @@ require 'spec_helper'
 require 'page_token'
 
 describe PageToken do
-  shared_examples_for "configurable" do
-    let(:redis) { mock("Redis") }
+  let(:redis) { mock("Redis") }
 
+  before(:each) do
+    redis.stub(:set)
+    redis.stub(:expire)
+  end
+
+  shared_examples_for "configurable" do
     it "namespaces redis" do
       subject.configure do |config|
         config.connection = redis
@@ -28,6 +33,32 @@ describe PageToken do
       end
 
       subject.config.redis.namespace.should == "something_else"
+    end
+
+    it "defaults to no timeout" do
+      subject.configure do |config|
+        config.connection = redis
+      end
+
+      subject.config.ttl.should be_nil
+    end
+
+    it "allows you to override ttl in seconds" do
+      subject.configure do |config|
+        config.connection = redis
+        config.ttl = 5
+      end
+
+      subject.config.ttl.should == 5
+    end
+
+    it "allows explicitly setting nil ttl" do
+      subject.configure do |config|
+        config.connection = redis
+        config.ttl = nil
+      end
+
+      subject.config.ttl.should be_nil
     end
 
     context "incomplete configuration" do
@@ -100,6 +131,10 @@ describe PageToken do
                                                 :search => {:foo => "bar",
                                                             :bar => "baz"})
         md5.should == 'd7f2dbac1f23881f10d1677cd0535f76'
+      end
+
+      it "writes to redis" do
+
       end
     end
 
