@@ -1,5 +1,11 @@
+require 'multi_json'
+
 class PageToken
   class SavedSearch 
+    def self.parse(token, json)
+      new(token, MultiJson.decode(json))
+    end
+
     attr_reader :token, :limit, :order, :params, :last_id
 
     def initialize(token, attrs = {})

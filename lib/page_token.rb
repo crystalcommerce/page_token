@@ -51,10 +51,32 @@ class PageToken
   end
 
   def search(token_or_search_options, &block)
-
+    if is_token?(token_or_search_options)
+      retrieve_search(token_or_search_options, &block)
+    else
+      store_search(token_or_search_options, &block)
+    end
   end
 
 private
+
+  def is_token?(token_or_search_options)
+    token_or_search_options.is_a?(String)
+  end
+
+  def retrieve_search(token, &block)
+    if str = redis.get(token)
+      saved_search = SavedSearch.parse(str)
+      results = block.call(saved_search)
+      SearchResultsDecorator.new(search_generator, saved_search, results)
+    else
+      #TODO: error handling
+    end
+  end
+
+  def store_search(search_options)
+    #TODO
+  end
 
   def search_generator
     SavedSearchGenerator.new(redis, ttl)

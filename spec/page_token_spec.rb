@@ -187,7 +187,50 @@ describe PageToken do
     end
 
     describe "#search" do
+      context "key given" do
+        let(:search) { "somesearchtoken" }
+        let(:stored_search) do
+          MultiJson.dump({
+            "limit" => 100,
+            "order" => "asc",
+            "last_id" => 200,
+            "search" => {
+              "name_like" => "example"
+            }
+          })
+        end
 
+        before(:each) do
+          redis.stub(:get).and_return(stored_search)
+        end
+        
+        it "finds the key in redis" do
+          redis.should_receive(:get).with("page_token:somesearchtoken")
+          subject.search(search) {}
+        end
+
+        it "yields a parsed search object" do
+          yielded_search = nil
+
+          subject.search(search) {|x| yielded_search = x}
+
+          yielded_search.should be
+          yielded_search.token.should == "somesearchtoken"
+          yielded_search.limit.should == 100
+          yielded_search.order.should == :asc
+          yielded_search.last_id.should == 200
+          yielded_search.params.should == {
+            "name_like" => "example"
+          }
+        end
+
+        it "creates a next page"
+
+        context "key does not exist" do
+          let(:stored_search) { nil }
+
+        end
+      end
     end
   end
 end
