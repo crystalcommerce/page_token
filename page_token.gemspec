@@ -15,6 +15,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = PageToken::VERSION
 
+  gem.add_dependency("multi_json", "~> 1.3.6")
   gem.add_dependency("redis", "~> 3.0.2")
   gem.add_dependency("redis-namespace", "~> 1.2.1")
 

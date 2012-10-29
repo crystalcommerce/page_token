@@ -30,4 +30,20 @@ describe PageToken::Utils do
       ]
     end
   end
+
+  describe "stringify_keys_and_values" do
+    it "handles the empty case" do
+      subject.stringify_keys_and_values({}).should == {}
+    end
+
+    it "converts keys and values" do
+      subject.stringify_keys_and_values({:foo => :bar, :bar => "baz"}).
+        should == {"foo" => "bar", "bar" => "baz"}
+    end
+
+    it "handles nested hashes" do
+      subject.stringify_keys_and_values({:foo => :bar, :bar => {"baz" => :blargh}}).
+        should == {"foo" => "bar", "bar" => {"baz" => "blargh"}}
+    end
+  end
 end

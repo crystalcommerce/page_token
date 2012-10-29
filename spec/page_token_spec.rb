@@ -7,6 +7,7 @@ describe PageToken do
   before(:each) do
     redis.stub(:set)
     redis.stub(:expire)
+    redis.stub(:multi).and_yield
   end
 
   shared_examples_for "configurable" do
@@ -92,6 +93,12 @@ describe PageToken do
     end
 
     describe "#generate_first_page_token" do
+      before(:each) do
+        subject.configure do |config|
+          config.connection = redis
+        end
+      end
+
       it "generates a deterministic md5" do
         md5 = subject.generate_first_page_token(:order => :asc,
                                                 :limit => 100,
@@ -133,8 +140,49 @@ describe PageToken do
         md5.should == 'd7f2dbac1f23881f10d1677cd0535f76'
       end
 
-      it "writes to redis" do
+      it "writes to redis in a transaction" do
+        redis.should_receive(:multi)
+        redis.should_receive(:set) do |key, payload|
+          key.should == 'page_token:d7f2dbac1f23881f10d1677cd0535f76'
+          MultiJson.decode(payload).should == {
+            "limit" => 100,
+            "order" => "asc",
+            "search" => {
+              "foo" => "bar",
+              "bar" => "baz",
+            }
+          }
+        end
 
+        subject.generate_first_page_token(:limit => 100,
+                                          :search => {:foo => "bar",
+                                                      :bar => "baz"})
+      end
+
+      it "does not set a timestamp by default" do
+        redis.should_not_receive(:expire)
+
+        subject.generate_first_page_token(:limit => 100,
+                                          :search => {:foo => "bar",
+                                                      :bar => "baz"})
+      end
+
+      context "ttl is set" do
+        before(:each) do
+          subject.configure do |config|
+            config.ttl = 5
+          end
+        end
+
+        it "sets the ttl" do
+          redis.should_receive(:expire).
+                with('page_token:d7f2dbac1f23881f10d1677cd0535f76', 5)
+
+
+          subject.generate_first_page_token(:limit => 100,
+                                            :search => {:foo => "bar",
+                                                        :bar => "baz"})
+        end
       end
     end
 

@@ -16,5 +16,17 @@ class PageToken
         end
       end
     end
+
+    def self.stringify_keys_and_values(hash)
+      hash.inject({}) do |acc, (k, v)|
+        v = case v
+            when Hash   then stringify_keys_and_values(v)
+            when Symbol then v.to_s
+            else v
+            end
+        acc[k.to_s] = v
+        acc
+      end
+    end
   end
 end
