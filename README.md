@@ -1,4 +1,4 @@
-# PunctuatedPagination
+# page_token
 
 TODO: Write a gem description
 
@@ -6,7 +6,7 @@ TODO: Write a gem description
 
 Add this line to your application's Gemfile:
 
-    gem 'punctuated_pagination'
+    gem 'page_token
 
 And then execute:
 
@@ -14,7 +14,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install punctuated_pagination
+    $ gem install page_token
 
 ## Usage
 
