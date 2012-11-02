@@ -187,6 +187,12 @@ describe PageToken do
     end
 
     describe "#search" do
+      before(:each) do
+        subject.configure do |config|
+          config.connection = redis
+        end
+      end
+
       context "key given" do
         let(:search) { "somesearchtoken" }
         let(:stored_search) do
@@ -224,7 +230,9 @@ describe PageToken do
           }
         end
 
-        it "creates a next page"
+        it "returns a decorated set of search results" do
+          pending
+        end
 
         context "key does not exist" do
           let(:stored_search) { nil }

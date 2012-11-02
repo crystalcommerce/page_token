@@ -4,6 +4,7 @@ require "page_token/version"
 require "page_token/config"
 require "page_token/utils"
 require "page_token/saved_search_generator"
+require "page_token/search_results_decorator"
 
 class PageToken
   extend Forwardable
@@ -47,14 +48,15 @@ class PageToken
   # optional arguments:
   # :order - either :asc or :desc, defaults to :asc
   def generate_first_page_token(options)
-    search_generator.generate(options).token
+    generate_search(options).token
   end
 
   def search(token_or_search_options, &block)
     if is_token?(token_or_search_options)
       retrieve_search(token_or_search_options, &block)
     else
-      store_search(token_or_search_options, &block)
+      #generate_search(token_or_search_options)
+      #TODO: do search in block, store it, generate next page, return decorated
     end
   end
 
@@ -66,7 +68,7 @@ private
 
   def retrieve_search(token, &block)
     if str = redis.get(token)
-      saved_search = SavedSearch.parse(str)
+      saved_search = SavedSearch.parse(token, str)
       results = block.call(saved_search)
       SearchResultsDecorator.new(search_generator, saved_search, results)
     else
@@ -74,8 +76,8 @@ private
     end
   end
 
-  def store_search(search_options)
-    #TODO
+  def generate_search(search_options)
+    search_generator.generate(search_options)
   end
 
   def search_generator

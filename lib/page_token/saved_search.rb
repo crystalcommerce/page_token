@@ -13,7 +13,7 @@ class PageToken
       @limit   = attrs.fetch('limit')
       @order   = attrs.fetch('order').to_sym
       @params  = attrs.fetch('search')
-      @last_id = attrs['search']
+      @last_id = attrs['last_id']
     end
   end
 end
