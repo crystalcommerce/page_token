@@ -193,6 +193,16 @@ describe PageToken do
         end
       end
 
+      shared_examples_for "search result decoration" do
+        it "returns a decorated set of search results" do
+          result = mock("Result")
+          decorated = subject.search(search) {|_| [result]}
+          decorated.length.should == 1
+          decorated.first.should == result
+          decorated.next_page_token.should == nil
+        end
+      end
+
       context "key given" do
         let(:search) { "somesearchtoken" }
         let(:stored_search) do
@@ -230,13 +240,7 @@ describe PageToken do
           }
         end
 
-        it "returns a decorated set of search results" do
-          result = mock("Result")
-          decorated = subject.search(search) {|_| [result]}
-          decorated.length.should == 1
-          decorated.first.should == result
-          decorated.next_page_token.should == nil
-        end
+        it_should_behave_like "search result decoration"
 
         context "key does not exist" do
           let(:stored_search) { nil }
@@ -246,6 +250,49 @@ describe PageToken do
               subject.search(search) {|_| }
             }.to raise_error(PageToken::TokenNotFound)
           end
+        end
+      end
+
+      context "search given" do
+        let(:search) do
+          {
+            "limit" => 100,
+            "order" => "asc",
+            "last_id" => 200,
+            "search" => {
+              "name_like" => "example"
+            }
+          }
+        end
+
+        it "yields in the search" do
+          yielded_search = nil
+
+          subject.search(search) {|x| yielded_search = x; []}
+
+          yielded_search.should be
+          yielded_search.token.should be_nil
+          yielded_search.limit.should == 100
+          yielded_search.order.should == :asc
+          yielded_search.last_id.should == 200
+          yielded_search.params.should == {
+            "name_like" => "example"
+          }
+        end
+
+        it_should_behave_like "search result decoration"
+
+        it "generates the next page given the search result" do
+          generator = mock("Saved Search Generator")
+          PageToken::SavedSearchGenerator.stub(:new).and_return(generator)
+          generator.should_receive(:generate).
+            with(hash_including("last_id" => 2)).
+            and_return(mock("Saved Search", :token => "NEWTOK"))
+          results = subject.search(search.merge("limit" => 2)) {
+            [stub(:id => 1), stub(:id => 2)]
+          }
+
+          results.next_page_token.should == "NEWTOK"
         end
       end
     end

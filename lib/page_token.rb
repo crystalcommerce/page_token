@@ -65,8 +65,7 @@ class PageToken
     if is_token?(token_or_search_options)
       retrieve_search(token_or_search_options, &block)
     else
-      #generate_search(token_or_search_options)
-      #TODO: do search in block, store it, generate next page, return decorated
+      perform_and_store_search(token_or_search_options, &block)
     end
   end
 
@@ -80,10 +79,21 @@ private
     if str = redis.get(token)
       saved_search = SavedSearch.parse(token, str)
       results = block.call(saved_search)
-      SearchResultsDecorator.new(search_generator, saved_search, results)
+      decorate_results(saved_search, results)
     else
       raise TokenNotFound.new(token)
     end
+  end
+
+  def perform_and_store_search(search_options, &block)
+    saved_search = SavedSearch.new(nil, search_options)
+    results = block.call(saved_search)
+
+    decorate_results(saved_search, results)
+  end
+
+  def decorate_results(saved_search, results)
+    SearchResultsDecorator.new(search_generator, saved_search, results)
   end
 
   def generate_search(search_options)

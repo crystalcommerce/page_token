@@ -14,7 +14,7 @@ class PageToken
     end
 
     def next_page_token
-      next_page && next_page.token
+      _next_page && _next_page.token
     end
 
   private
@@ -31,7 +31,7 @@ class PageToken
       @_results
     end
 
-    def next_page
+    def _next_page
       @_next_page
     end
 
