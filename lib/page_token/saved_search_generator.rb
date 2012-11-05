@@ -39,7 +39,6 @@ class PageToken
 
     def normalize_options(options)
       options = Utils.stringify_keys(options)
-      options.delete("last_id") # not pertinent to first page
       options["order"] ||= :asc
       options
     end

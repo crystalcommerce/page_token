@@ -58,6 +58,9 @@ class PageToken
   # optional arguments:
   # :order - either :asc or :desc, defaults to :asc
   def generate_first_page_token(options)
+    options = options.dup
+    options.delete(:last_id)
+    options.delete("last_id")
     generate_search(options).token
   end
 
