@@ -235,7 +235,7 @@ describe PageToken do
           yielded_search.limit.should == 100
           yielded_search.order.should == :asc
           yielded_search.last_id.should == 200
-          yielded_search.params.should == {
+          yielded_search.search.should == {
             "name_like" => "example"
           }
         end
@@ -275,7 +275,7 @@ describe PageToken do
           yielded_search.limit.should == 100
           yielded_search.order.should == :asc
           yielded_search.last_id.should == 200
-          yielded_search.params.should == {
+          yielded_search.search.should == {
             "name_like" => "example"
           }
         end

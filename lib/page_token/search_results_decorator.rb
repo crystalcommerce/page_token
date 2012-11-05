@@ -17,6 +17,14 @@ class PageToken
       _next_page && _next_page.token
     end
 
+    def asc?
+      _saved_search.asc?
+    end
+
+    def desc?
+      _saved_search.desc?
+    end
+
   private
 
     def _search_generator
@@ -54,7 +62,7 @@ class PageToken
         "limit" => _saved_search.limit,
         "order" => _saved_search.order,
         "last_id" => new_last_id,
-        "search" => _saved_search.params,
+        "search" => _saved_search.search,
       }
     end
   end

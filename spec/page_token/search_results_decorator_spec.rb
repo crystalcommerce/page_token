@@ -5,7 +5,7 @@ describe PageToken::SearchResultsDecorator do
   let(:limit) { 2 }
   let(:saved_search) { mock("Saved Search", :limit  => limit,
                                             :order  => :asc,
-                                            :params => {"foo" => "bar"}) }
+                                            :search => {"foo" => "bar"}) }
   let(:search_generator) { mock("Search Generator") }
   subject { PageToken::SearchResultsDecorator.new(search_generator,
                                                   saved_search,
