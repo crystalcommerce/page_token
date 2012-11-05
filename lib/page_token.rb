@@ -9,6 +9,16 @@ require "page_token/search_results_decorator"
 class PageToken
   extend Forwardable
 
+  class TokenNotFound < StandardError
+    def initialize(token)
+      @token = token
+    end
+
+    def message
+      "Token #{token} not found."
+    end
+  end
+
   class << self
     def respond_to?(method, include_private=false)
       super || instance.respond_to?(method, include_private)
@@ -72,7 +82,7 @@ private
       results = block.call(saved_search)
       SearchResultsDecorator.new(search_generator, saved_search, results)
     else
-      #TODO: error handling
+      raise TokenNotFound.new(token)
     end
   end
 

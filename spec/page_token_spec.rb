@@ -231,12 +231,21 @@ describe PageToken do
         end
 
         it "returns a decorated set of search results" do
-          pending
+          result = mock("Result")
+          decorated = subject.search(search) {|_| [result]}
+          decorated.length.should == 1
+          decorated.first.should == result
+          decorated.next_page_token.should == nil
         end
 
         context "key does not exist" do
           let(:stored_search) { nil }
 
+          it "raises an error" do
+            expect {
+              subject.search(search) {|_| }
+            }.to raise_error(PageToken::TokenNotFound)
+          end
         end
       end
     end
