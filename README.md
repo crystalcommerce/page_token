@@ -8,17 +8,7 @@ Usage section for notes on requirements.
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-    gem 'page_token
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install page_token
+TODO. Not currently on rubygems.
 
 ## Configuration
 You can configure PageToken globally:
