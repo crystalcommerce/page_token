@@ -2,7 +2,7 @@
 
 TODO: Write a better gem description
 
-Fairly simple pattern that stores search placeholders in Redis. This is
+Fairly hacky pattern that stores search placeholders in Redis. This is
 intended for allowing predictable, token-based pagination for APIs. See the
 Usage section for notes on requirements.
 
