@@ -87,6 +87,10 @@ results.length # => 20
 results.next_page_token # => "1aee8e5532bd5463ba160b7b6269a9da"
 results.some_crazy_method_your_search_lib_defines # => "Porkchop Sandwiches"
 ```
+
+Note that if the given token is not found, `PageToken::TokenNotFound` will be
+raised.
+
 ### Generating Token for First Page
 You can also generate a token for the first page of a search. This is useful if
 you have very complex search forms that require a POST so as not to produce a
@@ -112,6 +116,10 @@ These options are optional:
 1. `:order` - Either `:asc` or `:desc`. ID order. Defaults to `:asc`
 2. `:last_id` - For some rare cases, you may want to specify the last ID seen
 when beginning a search.
+
+## Gotchas
+Note that this tool uses Marshal to dump. That means that if you change ruby
+versions, you could potentially end up with collisions.
 
 ## Contributing
 
