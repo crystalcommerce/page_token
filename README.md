@@ -102,7 +102,10 @@ you have very complex search forms that require a POST so as not to produce a
 too-long URI:
 
 ```ruby
-PageToken.generate_first_page_token(:limit => 20, :)
+token = PageToken.generate_first_page_token(:limit => 20,
+                                            :search => {"name_like" => "joe"})
+token # => 1aee8e5532bd5463ba160b7b6269a9da
+redirect_to :search, :id => token
 ```
 
 ### Search Options
@@ -114,6 +117,7 @@ when deserialized, symbol keys will be converted into strings. If this a
 problem, use ActiveSupport's HashWithIndifferentAccess if you've got it.
 
 These options are optional:
+
 1. `:order` - Either `:asc` or `:desc`. ID order. Defaults to `:asc`
 2. `:last_id` - For some rare cases, you may want to specify the last ID seen
 when beginning a search.
