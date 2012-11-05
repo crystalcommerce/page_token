@@ -1,4 +1,5 @@
 # page_token
+[![Build Status](https://secure.travis-ci.org/crystalcommerce/page_token.png)](http://travis-ci.org/crystalcommerce/page_token)
 
 TODO: Write a better gem description
 
