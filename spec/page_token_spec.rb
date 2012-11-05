@@ -212,13 +212,13 @@ describe PageToken do
         
         it "finds the key in redis" do
           redis.should_receive(:get).with("page_token:somesearchtoken")
-          subject.search(search) {}
+          subject.search(search) {|_| [] }
         end
 
         it "yields a parsed search object" do
           yielded_search = nil
 
-          subject.search(search) {|x| yielded_search = x}
+          subject.search(search) {|x| yielded_search = x; []}
 
           yielded_search.should be
           yielded_search.token.should == "somesearchtoken"
