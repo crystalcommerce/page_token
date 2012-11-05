@@ -7,8 +7,9 @@ class PageToken
     end
 
     def digest
-      limit  = options.fetch("limit").to_i
-      order  = options.fetch("order").to_s
+      limit   = options.fetch("limit").to_i
+      order   = options.fetch("order").to_s
+      last_id = options["last_id"]
 
       unless %w[asc desc].include?(order)
         raise ArgumentError, "Order must be asc or desc" 
@@ -21,9 +22,10 @@ class PageToken
 
   private
 
-    def serialized_options(limit, order, search)
+    def serialized_options(limit, order, search, last_id)
       pairs = [["limit", limit],
                ["order", order],
+               ["last_id", last_id],
                ["search", Utils.hash_to_pairs(search)]]
       Marshal.dump(pairs)
     end

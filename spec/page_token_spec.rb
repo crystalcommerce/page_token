@@ -3,11 +3,14 @@ require 'page_token'
 
 describe PageToken do
   let(:redis) { mock("Redis") }
+  let(:digestor) { mock("Digestor", :digest => "SOMEDIGEST") }
 
   before(:each) do
     redis.stub(:set)
     redis.stub(:expire)
     redis.stub(:multi).and_yield
+
+    PageToken::Digestor.stub(:new).and_return(digestor)
   end
 
   shared_examples_for "configurable" do
@@ -93,6 +96,7 @@ describe PageToken do
     end
 
     describe "#generate_first_page_token" do
+
       before(:each) do
         subject.configure do |config|
           config.connection = redis
@@ -100,50 +104,63 @@ describe PageToken do
       end
 
       it "generates a deterministic md5" do
-        md5 = subject.generate_first_page_token(:order => :asc,
+        PageToken::Digestor.should_receive(:new).
+          with("order" => :asc,
+               "limit" => 100,
+               "search" => {:foo => "bar", :bar => "baz"})
+        subject.generate_first_page_token(:order => :asc,
                                                 :limit => 100,
                                                 :search => {:foo => "bar",
                                                             :bar => "baz"})
-        md5.should == 'd7f2dbac1f23881f10d1677cd0535f76'
       end
 
-      it "ignores extraneous options" do
-        md5 = subject.generate_first_page_token(:order => :asc,
+      it "returns them digest" do
+        subject.generate_first_page_token(:order => :asc,
+                                                :limit => 100,
+                                                :search => {:foo => "bar",
+                                                            :bar => "baz"}).
+          should == "SOMEDIGEST"
+      end
+
+      it "leaves removal of bogus options to the digestor" do
+        PageToken::Digestor.should_receive(:new).
+          with("order"  => :asc,
+               "limit"  => 100,
+               "pigs"   => "yep",
+               "search" => {:foo => "bar", :bar => "baz"})
+        subject.generate_first_page_token(:order => :asc,
                                                 :limit => 100,
                                                 :pigs => 'yep',
                                                 :search => {:foo => "bar",
                                                             :bar => "baz"})
-        md5.should == 'd7f2dbac1f23881f10d1677cd0535f76'
       end
 
-      it "ignores last_id option" do
-        md5 = subject.generate_first_page_token(:order => :asc,
-                                                :limit => 100,
-                                                :last_id => 10,
-                                                :search => {:foo => "bar",
-                                                            :bar => "baz"})
-        md5.should == 'd7f2dbac1f23881f10d1677cd0535f76'
-      end
-
-      it "coerces the expected types" do
-        md5 = subject.generate_first_page_token("order" => "asc",
-                                                "limit" => "100",
-                                                "search" => {"foo" => "bar",
-                                                             "bar" => "baz"})
-        md5.should == 'd7f2dbac1f23881f10d1677cd0535f76'
+      it "removes the last_id option because it is invalid here" do
+        PageToken::Digestor.should_receive(:new).
+          with("order" => :asc,
+               "limit" => 100,
+               "search" => {:foo => "bar", :bar => "baz"})
+        subject.generate_first_page_token(:order => :asc,
+                                          :limit => 100,
+                                          :last_id => 10,
+                                          :search => {:foo => "bar",
+                                                      :bar => "baz"})
       end
 
       it "defaults order to :asc" do
-        md5 = subject.generate_first_page_token(:limit => 100,
-                                                :search => {:foo => "bar",
-                                                            :bar => "baz"})
-        md5.should == 'd7f2dbac1f23881f10d1677cd0535f76'
+        PageToken::Digestor.should_receive(:new).
+          with("order" => :asc,
+               "limit" => 100,
+               "search" => {:foo => "bar", :bar => "baz"})
+        subject.generate_first_page_token(:limit => 100,
+                                          :search => {:foo => "bar",
+                                                      :bar => "baz"})
       end
 
       it "writes to redis in a transaction" do
         redis.should_receive(:multi)
         redis.should_receive(:set) do |key, payload|
-          key.should == 'page_token:d7f2dbac1f23881f10d1677cd0535f76'
+          key.should == 'page_token:SOMEDIGEST'
           MultiJson.decode(payload).should == {
             "limit" => 100,
             "order" => "asc",
@@ -176,7 +193,7 @@ describe PageToken do
 
         it "sets the ttl" do
           redis.should_receive(:expire).
-                with('page_token:d7f2dbac1f23881f10d1677cd0535f76', 5)
+                with('page_token:SOMEDIGEST', 5)
 
 
           subject.generate_first_page_token(:limit => 100,
