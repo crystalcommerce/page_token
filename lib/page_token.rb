@@ -89,7 +89,7 @@ private
   end
 
   def perform_and_store_search(search_options, &block)
-    saved_search = SavedSearch.new(nil, search_options)
+    saved_search = SavedSearch.new(nil, normalize_options(search_options))
     results = block.call(saved_search)
 
     decorate_results(saved_search, results)
@@ -100,10 +100,16 @@ private
   end
 
   def generate_search(search_options)
-    search_generator.generate(search_options)
+    search_generator.generate(normalize_options(search_options))
   end
 
   def search_generator
     SavedSearchGenerator.new(redis, ttl)
+  end
+
+  def normalize_options(options)
+    options = Utils.stringify_keys(options)
+    options["order"] ||= :asc
+    options
   end
 end

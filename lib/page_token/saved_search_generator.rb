@@ -12,7 +12,6 @@ class PageToken
     end
 
     def generate(options)
-      options = normalize_options(options)
       validate_options(options)
       key = generate_key(options)
 
@@ -37,15 +36,9 @@ class PageToken
       Digestor.new(options).digest
     end
 
-    def normalize_options(options)
-      options = Utils.stringify_keys(options)
-      options["order"] ||= :asc
-      options
-    end
-
     def validate_options(options)
-      raise(ArgumentError, "Missing :limit")  unless options["limit"]
-      raise(ArgumentError, "Missing :search") unless options["search"]
+      raise(ArgumentError, "Missing limit")  unless options["limit"]
+      raise(ArgumentError, "Missing search") unless options["search"]
     end
   end
 end
