@@ -1,4 +1,5 @@
 require 'digest/md5'
+require 'page_token/utils'
 
 class PageToken
   class Digestor
@@ -16,7 +17,7 @@ class PageToken
       end
 
       search = options.fetch("search")
-      serialized = serialized_options(limit, order, search)
+      serialized = serialized_options(limit, order, search, last_id)
       Digest::MD5.hexdigest(serialized)
     end
 
@@ -26,8 +27,16 @@ class PageToken
       pairs = [["limit", limit],
                ["order", order],
                ["last_id", last_id],
-               ["search", Utils.hash_to_pairs(search)]]
+               ["search", serialize_search(search)]]
       Marshal.dump(pairs)
+    end
+
+    def serialize_search(search)
+      if search.is_a?(Hash)
+        Utils.hash_to_pairs(search)
+      else
+        search
+      end
     end
 
     def options
