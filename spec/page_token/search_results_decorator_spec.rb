@@ -44,6 +44,7 @@ describe PageToken::SearchResultsDecorator do
     end
 
     its(:next_page_token) { should == "NEWTOK" }
+    its(:limit)           { should == 2        }
   end
 
   context "array-style results" do
@@ -55,6 +56,7 @@ describe PageToken::SearchResultsDecorator do
       let(:limit) { 5 }
 
       it_should_behave_like "no next_page_token"
+      its(:limit) { should == 5 }
     end
   end
 
@@ -66,10 +68,10 @@ describe PageToken::SearchResultsDecorator do
                                                      :last => last_order) }
 
     it_should_behave_like "generates next page of results"
-
     context "final page" do
       let(:limit) { 5 }
       it_should_behave_like "no next_page_token"
+      its(:limit) { should == 5 }
     end
   end
 end

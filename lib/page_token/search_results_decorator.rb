@@ -17,6 +17,10 @@ class PageToken
       _next_page && _next_page.token
     end
 
+    def limit
+      _saved_search.limit
+    end
+
     def asc?
       _saved_search.asc?
     end
@@ -50,7 +54,7 @@ class PageToken
     end
 
     def _last_page?
-      _results.length < _saved_search.limit
+      _results.length < limit
     end
 
     def new_last_id
