@@ -15,7 +15,7 @@ class PageToken
     end
 
     def message
-      "Token #{token} not found."
+      "Token #{@token} not found."
     end
   end
 

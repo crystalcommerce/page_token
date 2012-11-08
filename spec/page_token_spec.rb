@@ -283,8 +283,8 @@ describe PageToken do
 
           it "raises an error" do
             expect {
-              subject.search(search) {|_| }
-            }.to raise_error(PageToken::TokenNotFound)
+              subject.search("BOGUS") {|_| }
+            }.to raise_error(PageToken::TokenNotFound, "Token BOGUS not found.")
           end
         end
       end
