@@ -157,6 +157,25 @@ describe PageToken do
                                                       :bar => "baz"})
       end
 
+      it "allows an explicitly nil search" do
+        expect {
+          subject.generate_first_page_token(:limit  => 100,
+                                            :search => nil)
+        }.to_not raise_error
+      end
+
+      it "does not allow a missing search option" do
+        expect {
+          subject.generate_first_page_token(:limit  => 100)
+        }.to raise_error(ArgumentError)
+      end
+
+      it "does not allow a nil limit option" do
+        expect {
+          subject.generate_first_page_token(:limit => nil)
+        }.to raise_error(ArgumentError)
+      end
+
       it "writes to redis in a transaction" do
         redis.should_receive(:multi)
         redis.should_receive(:set) do |key, payload|

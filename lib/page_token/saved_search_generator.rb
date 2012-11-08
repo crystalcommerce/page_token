@@ -38,7 +38,7 @@ class PageToken
 
     def validate_options(options)
       raise(ArgumentError, "Missing limit")  unless options["limit"]
-      raise(ArgumentError, "Missing search") unless options["search"]
+      raise(ArgumentError, "Missing search") unless options.has_key?("search")
     end
   end
 end
